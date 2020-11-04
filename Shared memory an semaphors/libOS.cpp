@@ -10,11 +10,57 @@
 #include <unistd.h> //usleep
 #include <cstdio> //perror
 #include <stdexcept> //errors
+//#include <array>
+#include <vector>
+#include <cstring>
 
 constexpr int PROJECT_ID = 2486;
 const std::string PATH = "/tmp/lab_mq";
 const std::string PATH_MEM = "/tmp/lab_shmem_mem";
 const std::string PATH_SEM = "/tmp/lab_shmem_sem";
+
+
+std::string msg_rcv_str(byte_t* ptr)
+{
+    char buf[SHMEM_SIZE];
+    ::strcpy(buf, ptr);
+
+    std::string msg(buf);
+    return msg;
+}
+
+void snd_msg_string(const std::string& msg, byte_t* ptr)
+{
+    ::memset(ptr, 0, SHMEM_SIZE);
+    ::memcpy(ptr, msg.c_str(), msg.size());
+}
+
+/**
+ * @brief производит операцию над семафоромами из набора sem_id
+ * @param[in] sem_id -- id набора семафоров
+ * @param[in] num -- операция (0, -1, +1, ...)
+ */
+void sem_add(int sem_id, short num)
+{
+//    std::array<sembuf, 1> sops;     //sembuf - struct to describe sem's operations
+//    sops.fill({.sem_num = 0, .sem_op = num, .sem_flg = 0 });
+//    ::semop(sem_id, sops.data(), sops.size());
+
+    struct sembuf sb = {0, num, 0};
+    ::semop(sem_id, &sb, 1);
+}
+
+byte_t* attach_memory(int shm_id)
+{
+    const byte_t* ERROR_PTR = reinterpret_cast<const byte_t*>(-1);
+    byte_t* ptr = reinterpret_cast<byte_t*>(::shmat(shm_id, nullptr, 0));
+    if (ptr == ERROR_PTR)
+    {
+        std::perror("shmat error");
+        throw std::runtime_error("shmat error");
+    }
+    return ptr;
+}
 
 key_t get_key_impl(const std::string& path)
 {
@@ -41,6 +87,7 @@ key_t get_key_sem()
 int create_shmem()
 {
     key_t key = get_key_mem();
+
     int shm_id = ::shmget(key, SHMEM_SIZE, IPC_CREAT | IPC_EXCL | 0666);
     if (shm_id == -1)
     {
