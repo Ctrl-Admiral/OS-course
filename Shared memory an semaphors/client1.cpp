@@ -49,16 +49,23 @@ int main() try
 
     sem_add(sem_id, -2);    // ждем-с от сервера
 
-    std::cout << "Received message: \n" << std::flush;
+    std::cout << "Received list of files more than 4 blocks: \n" << std::flush;
     std::cout << msg_rcv_str(ptr) << std::flush;
 
     //sem_add(sem_id, +3); //сигнал клиенту2, что он может приступать
+
 
     if (::shmdt(ptr) == -1)
     {
         std::perror("shmdt");
         throw std::runtime_error("shmdt");
     }
+
+    struct shmid_ds shmid_ds, *buft;
+    buft = &shmid_ds;
+    ::shmctl(shm_id, IPC_STAT, buft);
+
+    std::cout << "Time of last shmdt(): " << buft->shm_dtime << '\n';
 
     return 0;
 }
