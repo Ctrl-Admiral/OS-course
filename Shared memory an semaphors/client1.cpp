@@ -33,7 +33,10 @@ int main() try
     std::cout << "...Message created.\n" << std::flush;
 
 #ifndef NDEBUG
-    std::cout << "Message:\n" << msg << std::flush;
+    std::cout << "----------------------\n"
+              << "Created message:\n" << msg
+              << "----------------------\n"
+              << std::flush;
 #endif
 
     int shm_id = open_shmem();
@@ -45,14 +48,14 @@ int main() try
 
     sem_add(sem_id, +1); // Отправил сообщение? сигнал об этом серверу
 
-    std::cout << "...Waiting server\n";
+    std::cout << "...Waiting for server\n";
 
     sem_add(sem_id, -2);    // ждем-с от сервера
 
     std::cout << "Received list of files more than 4 blocks: \n" << std::flush;
     std::cout << msg_rcv_str(ptr) << std::flush;
 
-    //sem_add(sem_id, +3); //сигнал клиенту2, что он может приступать
+    sem_add(sem_id, +3); //сигнал клиенту2, что он может приступать
 
 
     if (::shmdt(ptr) == -1)
@@ -65,7 +68,10 @@ int main() try
     buft = &shmid_ds;
     ::shmctl(shm_id, IPC_STAT, buft);
 
-    std::cout << "Time of last shmdt(): " << buft->shm_dtime << '\n';
+    std::cout << "Time of last shmdt(): " << buft->shm_dtime << '\n'
+//              << "Size of segment in bytes: " << buft->shm_segsz << '\n'
+//              << "Time of last shmat(): " << buft->shm_atime << '\n'
+              ;
 
     return 0;
 }

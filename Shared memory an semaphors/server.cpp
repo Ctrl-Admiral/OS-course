@@ -50,15 +50,28 @@ std::string msg_handle(const std::string& msg)
     std::string line;
 
     std::string command = "";
+
+#ifndef NDEBUG
+    std::cout << "----------------------\n";
+#endif
+
     while (std::getline(msgstream, line))
     {
         command = "du " + line + " | grep '[0-9]*' | head -1";
         int blocks = std::stoi(capture_cmd_out(command));
+
 #ifndef NDEBUG
-        std::cout << "Block of " << line << ": " << blocks << '\n';
+        std::cout
+                  << "Block of " << line << ": " << blocks << '\n';
 #endif
+
         if (blocks > 2) ans += (line + "\n");
     }
+
+#ifndef NDEBUG
+    std::cout << "----------------------\n";
+#endif
+
     return ans;
 }
 
@@ -74,23 +87,54 @@ int main()
     std::string msg = msg_rcv_str(ptr);
 
 #ifndef NDEBUG
-    std::cout << "Message:\n" << msg << std::flush;
+    std::cout << "----------------------\n"
+              << "Message from client1:\n" << msg
+              << "----------------------\n"
+              << std::flush;
 #endif
 
     std::string res = msg_handle(msg);
 
 #ifndef NDEBUG
-    std::cout << "Handled message:\n" << res << std::flush;
+    std::cout << "----------------------\n"
+              << "Handled message:\n" << res
+              << "----------------------\n"
+              << std::flush;
 #endif
 
     snd_msg_string(res, ptr);
 
-    std::cout << "..Message sent to client1.\n" << std::flush;
+    std::cout << "...Message sent to client1.\n" << std::flush;
     sem_add(resources.sem_id, +2);  //signal for client1
 
-    std::cout << "...Signal to client1 sent\n" << std::flush;
+    std::cout << "...Signal to client1 sent.\n" << std::flush;
 
-//    sem_add(resources.sem_id, -4); //waiting for client2
+    std::cout << "...Waiting for client2.\n" << std::flush;
+    sem_add(resources.sem_id, -4); //waiting for client2
+
+    msg = msg_rcv_str(ptr);
+
+#ifndef NDEBUG
+    std::cout << "----------------------\n"
+              << "Message from client1:\n" << msg
+              << "----------------------\n"
+              << std::flush;
+#endif
+
+    res = msg_handle(msg);
+
+#ifndef NDEBUG
+    std::cout << "----------------------\n"
+              << "Handled message:\n" << res
+              << "----------------------\n"
+              << std::flush;
+#endif
+
+    snd_msg_string(res, ptr);
+    std::cout << "...Message sent to client2.\n" << std::flush;
+
+    sem_add(resources.sem_id, +5);
+    std::cout << "...Signal to client2 sent.\n" << std::flush;
 
     if (::shmdt(ptr) == -1)
     {
