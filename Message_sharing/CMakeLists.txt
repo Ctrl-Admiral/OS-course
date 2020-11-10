@@ -11,5 +11,9 @@ add_library(libOS ../libOS/libOS.cpp ../libOS/libOS.hpp)
 add_executable(client client.cpp)
 add_executable(server server.cpp)
 
+set(libOS_INCLUDE_DIR ../libOS)
+
+target_include_directories(client PRIVATE ${libOS_INCLUDE_DIR})
+target_include_directories(server PRIVATE ${libOS_INCLUDE_DIR})
 target_link_libraries(client libOS)
 target_link_libraries(server libOS)

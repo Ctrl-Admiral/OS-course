@@ -6,7 +6,7 @@
 //сообщение в очередь и максимальную длину очереди сообщений в байтах.
 //Удалить очередь сообщений.
 
-#include "libOS.hpp"
+#include <libOS.hpp>
 #include <fcntl.h> //open
 #include <sys/msg.h>
 #include <sys/stat.h>

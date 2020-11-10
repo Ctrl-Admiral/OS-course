@@ -5,7 +5,7 @@
  * результаты обработки сервера и время последнего отсоединения процесса от РОП.
  */
 
-#include "libOS.hpp"
+#include <libOS.hpp>
 #include <cstring> //memset, memcpy
 #include <stdexcept>
 #include <iostream>
@@ -64,6 +64,15 @@ int main() try
         throw std::runtime_error("shmdt");
     }
 
+//    struct shmid_ds:
+//        struct ipc_perm shm_perm;		/* operation permission struct */
+//        size_t shm_segsz;             /* size of segment in bytes */
+//        __time_t shm_atime;			/* time of last shmat() */
+//        __time_t shm_dtime;			/* time of last shmdt() */
+//        __time_t shm_ctime;			/* time of last change by shmctl() */
+//        __pid_t shm_cpid;             /* pid of creator */
+//        __pid_t shm_lpid;             /* pid of last shmop */
+//        shmatt_t shm_nattch;          /* number of current attaches */
     struct shmid_ds shmid_ds, *buft;
     buft = &shmid_ds;
     ::shmctl(shm_id, IPC_STAT, buft);
