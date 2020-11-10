@@ -43,7 +43,7 @@ int main() try
     int sem_id = open_sem();
     byte_t* ptr = attach_memory(shm_id);    //подключаемся к разд памяти
 
-    snd_msg_string(msg, ptr);
+    msg_snd_string(msg, ptr);
     std::cout << "...Message sent.\n" << std::flush;
 
     sem_add(sem_id, +1); // Отправил сообщение? сигнал об этом серверу

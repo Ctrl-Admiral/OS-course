@@ -130,7 +130,7 @@ int main()
               << std::flush;
 #endif
 
-    snd_msg_string(res, ptr);
+    msg_snd_string(res, ptr);
     std::cout << "...Message sent to client2.\n" << std::flush;
 
     sem_add(resources.sem_id, +5);

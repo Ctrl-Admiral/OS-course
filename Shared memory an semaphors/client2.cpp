@@ -38,7 +38,7 @@ int main() try
               << "----------------------\n"
               << std::flush;
 #endif
-    snd_msg_string(msg, ptr);
+    msg_snd_string(msg, ptr);
     std::cout << "...Message sent\n" << std::flush;
 
     sem_add(sem_id, +4);    //сигнал серверу, что все готово

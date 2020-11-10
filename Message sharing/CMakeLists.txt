@@ -6,7 +6,7 @@ project(OS-msgshr LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(libOS libOS.cpp libOS.hpp)
+add_library(libOS ../libOS/libOS.cpp ../libOS/libOS.hpp)
 
 add_executable(client client.cpp)
 add_executable(server server.cpp)
